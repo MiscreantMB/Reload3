@@ -40,16 +40,26 @@
       function draw() {
         background(0, 0.1);
 
-        // Control the size of the square with the mouseX position
-        const squareSize = map(mouseX, 0, width, 0, min(width, height) * 0.8);
+        // Get the interaction position
+        let interactionX = mouseX;
+        let interactionY = mouseY;
+
+        // If there's a touch event, use the first touch point
+        if (touches.length > 0) {
+          interactionX = touches[0].x;
+          interactionY = touches[0].y;
+        }
+
+        // Control the size of the square with the interactionX position
+        const squareSize = map(interactionX, 0, width, 0, min(width, height) * 0.8);
         fill(0);
         stroke(255);
         strokeWeight(5);
         rectMode(CENTER);
         rect(width / 2, height / 2, squareSize, squareSize);
 
-        // Control the number of spirals with the mouseY position
-        let numSpirals = map(mouseY, 0, height, 10, 100);
+        // Control the number of spirals with the interactionY position
+        let numSpirals = map(interactionY, 0, height, 10, 100);
 
         const radiusScale = squareSize * 0.45;
 
@@ -81,6 +91,11 @@
 
         angle += 0.005;
         spiralRadius = (sin(angle * 0.1) * 0.5 + 0.5);
+      }
+
+      function touchMoved() {
+        // Prevent scrolling on touch devices
+        return false;
       }
     </script>
   </div>
