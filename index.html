@@ -37,6 +37,7 @@
       let colorOffset;
       let angleSpeed = 0.005;
       let tapCounter = 0;
+      let lastShakeTime = 0;
 
       function setup() {
         let canvas = createCanvas(windowWidth, windowHeight);
@@ -70,6 +71,10 @@
         hammer.on('doubletap', function(event) {
           angleSpeed += 0.005;
         });
+
+        if (window.DeviceMotionEvent) {
+          window.addEventListener('devicemotion', deviceMotionHandler, false);
+        }
       }
 
       function windowResized() {
@@ -83,7 +88,6 @@
           let d = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
           numPoints = map(d, 0, max(width, height), 100, 300);
         }
-
         fill(0);
         stroke(255);
         strokeWeight(5);
@@ -128,6 +132,23 @@
         }
       }
 
+      function deviceMotionHandler(event) {
+        let xAccel = event.accelerationIncludingGravity.x;
+        let yAccel = event.accelerationIncludingGravity.y;
+        let zAccel = event.accelerationIncludingGravity.z;
+
+        let shakeThreshold = 12;
+        let currentTime = new Date().getTime();
+
+        if ((Math.abs(xAccel) > shakeThreshold || Math.abs(yAccel) > shakeThreshold || Math.abs(zAccel) > shakeThreshold) && (currentTime - lastShakeTime > 1000)) {
+          lastShakeTime = currentTime;
+          bgColor = color(random(360), 80, 20);
+          numSpirals = random(10, 100);
+          numPoints = random(100, 300);
+          angleSpeed = random(0.005, 0.02);
+        }
+      }
+
       function touchMoved() {
         // Prevent scrolling on touch devices
         return false;
@@ -136,3 +157,5 @@
   </div>
 </body>
 </html>
+
+       
